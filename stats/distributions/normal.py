@@ -43,6 +43,10 @@ class Normal(Distribution):
         return 1 - self.cumulative(X)
 
     @property
+    def variance(self):
+        return self.scale ** 2
+
+    @property
     def entropy(self):
         return 0.5 + 0.5 * np.log(2 * np.pi) + np.log(self.scale)
 
