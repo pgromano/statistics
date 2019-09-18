@@ -4,21 +4,43 @@ from .distribution import Distribution
 
 
 class Uniform(Distribution):
-    def __init__(self, low=0, high=1, seed=None):
+    """ Continous Uniform Distribution
+
+    The continuous uniform distribution or rectangular distribution is a family 
+    of symmetric probability distributions such that for each member of the 
+    family, all intervals of the same length on the distribution's support are 
+    equally probable.
+
+    Arguments
+    ---------
+    low : float, default=0.0
+        The lower bound of the uniform distribution.
+    high : float, default=1.0
+        The upper bounds of the uniform distribution. Currently, this 
+        implementation treats the upper bound exclusively. This will deviate 
+        from scipy.stats which inclusively treats the upper bound.
+    seed : int, default=None
+        The seed to initialize the random number generator.
+    """
+
+    def __init__(self, low=0.0, high=1.0, seed=None):
         self.low = low
         self.high = high
         self.seed = seed
         self.reset()
 
     def reset(self, seed=None):
+        """ Reset random number generator """
         if seed is None:
             seed = self.seed
         self._state = np.random.RandomState(seed)
 
-    def sample(self, *size, dtype=np.float):
-        return self._state.uniform(self.low, self.high, size=size).astype(dtype)
+    def sample(self, *size):
+        """ Sample from distribution """
+        return self._state.uniform(self.low, self.high, size=size)
 
     def probability(self, *X):
+        """ Return the probability density for a given value """ 
         if not isinstance(X, np.ndarray):
             X = np.squeeze(X)
 
@@ -34,6 +56,7 @@ class Uniform(Distribution):
         return np.piecewise(X, [a_bool, b_bool], [a, b])
 
     def log_probability(self, *X):
+        """ Return the log probability density for a given value """
         if not isinstance(X, np.ndarray):
             X = np.squeeze(X)
 
@@ -47,6 +70,7 @@ class Uniform(Distribution):
         return np.piecewise(X, [a_bool, b_bool], [-np.log(self.high - self.low), -np.inf])
 
     def cumulative(self, *X):
+        """ Return the cumulative density for a given value """
         if not isinstance(X, np.ndarray):
             X = np.squeeze(X)
 
@@ -64,6 +88,7 @@ class Uniform(Distribution):
         return np.piecewise(X, [a_bool, b_bool, c_bool], [a, b, c])
 
     def percentile(self, *X):
+        """ Return values for the given percentiles """
         if not isinstance(X, np.ndarray):
             X = np.squeeze(X)
         
@@ -78,6 +103,7 @@ class Uniform(Distribution):
         return np.piecewise(X, [a_bool, b_bool], [a, b])
 
     def survival(self, *X):
+        """ Return the likelihood of a value or greater """
         if not isinstance(X, np.ndarray):
             X = np.squeeze(X)
         return 1 - self.cumulative(X)
