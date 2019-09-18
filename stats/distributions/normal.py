@@ -15,6 +15,9 @@ class Normal(Distribution):
             seed = self.seed
         self._state = np.random.RandomState(seed)
 
+    def sample(self, *size, dtype=np.float):
+        return self._state.normal(self.loc, self.scale, size=size).astype(dtype)
+
     def probability(self, *X):
         if not isinstance(X, np.ndarray):
             X = np.squeeze(X)
@@ -43,8 +46,28 @@ class Normal(Distribution):
         return 1 - self.cumulative(X)
 
     @property
+    def mean(self):
+        return self.loc
+
+    @property
+    def median(self):
+        return self.loc
+
+    @property
+    def mode(self):
+        return self.loc
+
+    @property
     def variance(self):
         return self.scale ** 2
+
+    @property
+    def skewness(self):
+        return 0
+
+    @property
+    def kurtosis(self):
+        return 0
 
     @property
     def entropy(self):
@@ -53,6 +76,3 @@ class Normal(Distribution):
     @property
     def perplexity(self):
         return np.exp(self.entropy)
-
-    def sample(self, *size, dtype=np.float):
-        return self._state.normal(self.loc, self.scale, size=size).astype(dtype)
