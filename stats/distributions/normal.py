@@ -34,9 +34,9 @@ class Normal(Distribution):
             seed = self.seed
         self._state = np.random.RandomState(seed)
 
-    def sample(self, *size):
+    def sample(self, *size, dtype=np.float):
         """ Sample from distribution """
-        return self._state.normal(self.loc, self.scale, size=size)
+        return self._state.normal(self.loc, self.scale, size=size).astype(dtype)
 
     def probability(self, *X):
         """ Return the probability density for a given value """

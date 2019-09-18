@@ -35,9 +35,9 @@ class Uniform(Distribution):
             seed = self.seed
         self._state = np.random.RandomState(seed)
 
-    def sample(self, *size):
+    def sample(self, *size, dtype=np.float):
         """ Sample from distribution """
-        return self._state.uniform(self.low, self.high, size=size)
+        return self._state.uniform(self.low, self.high, size=size).astype(dtype)
 
     def probability(self, *X):
         """ Return the probability density for a given value """ 
