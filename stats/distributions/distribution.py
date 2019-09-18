@@ -84,8 +84,8 @@ class Distribution:
             return self.__rtruediv__(args[0])
         raise ValueError("{} not supported with {} distribution".format(ufunc, self.__name__))
 
-    def __call__(self, *size):
-        return self.sample(*size)
+    def __call__(self, *size, dtype=np.float):
+        return self.sample(*size, dtype=dtype)
 
     @property
     def __name__(self):
