@@ -16,7 +16,7 @@ class Normal(Distribution):
     ---------
     loc : float, default=0.0
         The center, or mean, of the normal distribution.
-    high : float, default=1.0
+    scale : float, default=1.0
         The full width at half max, or standard deviation, of the normal 
         distribution.
     seed : int, default=None
