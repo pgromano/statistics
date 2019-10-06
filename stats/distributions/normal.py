@@ -2,6 +2,8 @@ import numpy as np
 import scipy.special as sc
 from .distribution import Distribution
 
+from ..utils import check_array
+
 
 class Normal(Distribution):
     """ Normal Distribution
@@ -42,13 +44,15 @@ class Normal(Distribution):
         """ Return the probability density for a given value """
         if not isinstance(X, np.ndarray):
             X = np.squeeze(X)
-        return np.exp(-X ** 2 / 2.0) / np.sqrt(2 * np.pi)
+        out = np.exp(-X ** 2 / 2.0) / np.sqrt(2 * np.pi)
+        return check_array(out)
 
     def log_probability(self, *X):
         """ Return the log probability density for a given value """
         if not isinstance(X, np.ndarray):
             X = np.squeeze(X)
-        return -X ** 2 / 2.0 - np.log(np.sqrt(2 * np.pi))
+        out = -X ** 2 / 2.0 - np.log(np.sqrt(2 * np.pi))
+        return check_array(out)
 
     def cumulative(self, *X):
         """ Return the cumulative density for a given value """
@@ -56,19 +60,22 @@ class Normal(Distribution):
             X = np.squeeze(X)
         num = X - self.loc
         denom = self.scale * np.sqrt(2)
-        return 0.5 * (1 + sc.erf(num / denom))
+        out = 0.5 * (1 + sc.erf(num / denom))
+        return check_array(out)
 
     def percentile(self, *X):
         """ Return values for the given percentiles """
         if not isinstance(X, np.ndarray):
             X = np.squeeze(X)
-        return self.loc + self.scale * sc.erfinv(2 * X - 1) * np.sqrt(2)
+        out = self.loc + self.scale * sc.erfinv(2 * X - 1) * np.sqrt(2)
+        return check_array(out)
 
     def survival(self, *X):
         """ Return the likelihood of a value or greater """
         if not isinstance(X, np.ndarray):
             X = np.squeeze(X)
-        return 1 - self.cumulative(X)
+        out = 1 - self.cumulative(X)
+        return check_array(out)
 
     @property
     def mean(self):
@@ -96,8 +103,10 @@ class Normal(Distribution):
 
     @property
     def entropy(self):
-        return 0.5 + 0.5 * np.log(2 * np.pi) + np.log(self.scale)
+        out = 0.5 + 0.5 * np.log(2 * np.pi) + np.log(self.scale)
+        return check_array(out)
 
     @property
     def perplexity(self):
-        return np.exp(self.entropy)
+        out = np.exp(self.entropy)
+        return check_array(out)
