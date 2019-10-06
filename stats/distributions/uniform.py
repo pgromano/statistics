@@ -2,6 +2,8 @@ import numpy as np
 import scipy.special as sc
 from .distribution import Distribution
 
+from ..utils import check_array
+
 
 class Uniform(Distribution):
     """ Continous Uniform Distribution
@@ -14,11 +16,9 @@ class Uniform(Distribution):
     Arguments
     ---------
     low : float, default=0.0
-        The lower bound of the uniform distribution.
+        The inclusive lower bound of the uniform distribution.
     high : float, default=1.0
-        The upper bounds of the uniform distribution. Currently, this 
-        implementation treats the upper bound exclusively. This will deviate 
-        from scipy.stats which inclusively treats the upper bound.
+        The inclusive upper bounds of the uniform distribution. 
     seed : int, default=None
         The seed to initialize the random number generator.
     """
@@ -37,75 +37,80 @@ class Uniform(Distribution):
 
     def sample(self, *size, dtype=np.float):
         """ Sample from distribution """
-        return self._state.uniform(self.low, self.high, size=size).astype(dtype)
+        out = self._state.uniform(self.low, self.high, size=size).astype(dtype)
+        return check_array(out)
 
     def probability(self, *X):
         """ Return the probability density for a given value """ 
         if not isinstance(X, np.ndarray):
-            X = np.squeeze(X)
+            X = np.squeeze(X).astype(float)
 
-        # Boolean conditions for inside and outside distribution range
-        a_bool = np.logical_and(X >= self.low, X < self.high)
+        # Boolean conditions for inside (a) and outside (b) distribution range
+        a_bool = np.logical_and(X >= self.low, X <= self.high)
         b_bool = np.logical_or(X < self.low, X > self.high)
 
         # Distribution values by range
-        a = 1 / (self.high - self.low)
-        b = 0
+        a_val = 1 / (self.high - self.low)
+        b_val = 0
 
         # return probability
-        return np.piecewise(X, [a_bool, b_bool], [a, b])
+        out = np.piecewise(X, [a_bool, b_bool], [a_val, b_val])
+        return check_array(out)
 
     def log_probability(self, *X):
         """ Return the log probability density for a given value """
         if not isinstance(X, np.ndarray):
-            X = np.squeeze(X)
+            X = np.squeeze(X).astype(float)
 
         # Boolean conditions for inside and outside distribution range
-        a_bool = np.logical_and(X >= self.low, X < self.high)
-        b_bool = np.logical_or(X < self.low, X >= self.high)
+        a_bool = np.logical_and(X >= self.low, X <= self.high)
+        b_bool = np.logical_or(X < self.low, X > self.high)
 
         # Distribution values by range
-        a = self.low.le(value).type_as(self.low)
-        b = self.high.gt(value).type_as(self.low)
-        return np.piecewise(X, [a_bool, b_bool], [-np.log(self.high - self.low), -np.inf])
+        a = -np.log(self.high - self.low)
+        b = np.nan
+        out = np.piecewise(X, [a_bool, b_bool], [a_val, b_val])
+        return check_array(out)
 
     def cumulative(self, *X):
         """ Return the cumulative density for a given value """
         if not isinstance(X, np.ndarray):
-            X = np.squeeze(X)
+            X = np.squeeze(X).astype(float)
 
         # Boolean conditions for below, inside, and above distribution range
         a_bool = X < self.low
-        b_bool = np.logical_and(X >= self.low, X < self.high)
-        c_bool = X >= self.high
+        b_bool = np.logical_and(X >= self.low, X <= self.high)
+        c_bool = X > self.high
 
         # values for distribution range
-        a = 0
-        def b(x): return (x - self.low) / (self.high - self.low) 
-        c = 1
+        a_val = 0
+        def b_val(x): return (x - self.low) / (self.high - self.low) 
+        c_val = 1
 
         # return cumulative density
-        return np.piecewise(X, [a_bool, b_bool, c_bool], [a, b, c])
+        out = np.piecewise(X, [a_bool, b_bool, c_bool], [a_val, b_val, c_val])
+        return check_array(out)
 
     def percentile(self, *X):
         """ Return values for the given percentiles """
         if not isinstance(X, np.ndarray):
-            X = np.squeeze(X)
+            X = np.squeeze(X).astype(float)
         
         # Boolean conditions for outside and inside distribution range
-        a_bool = np.logical_or(X < self.low, X >= self.high)
-        b_bool = np.logical_and(X >= self.low, X < self.high)
+        a_bool = np.logical_or(X < 0, X > 1)
+        b_bool = np.logical_and(X >= 0, X <= 1)
         
         # values for distribution range
-        a = np.inf
-        def b(x): return x * (self.high - self.low) + self.low
+        a_val = np.nan
+        def b_val(x): return x * (self.high - self.low) + self.low
 
-        return np.piecewise(X, [a_bool, b_bool], [a, b])
+        out = np.piecewise(X, [a_bool, b_bool], [a_val, b_val])
+        return check_array(out)
 
     def survival(self, *X):
         """ Return the likelihood of a value or greater """
         if not isinstance(X, np.ndarray):
-            X = np.squeeze(X)
+            X = np.squeeze(X).astype(float)
         return 1 - self.cumulative(X)
 
     @property
