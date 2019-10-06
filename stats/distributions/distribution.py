@@ -8,6 +8,18 @@ class Distribution:
     to facillitate operations with numpy ndarrays.
     """
 
+    def __lt__(self, X):
+        return self.cumulative(X)
+
+    def __rlt__(self, X):
+        return self.__gt__(X)
+
+    def __gt__(self, X):
+        return self.survival(X)
+
+    def __rgt__(self, X):
+        return self.__lt__(X)
+
     def __add__(self, X):
         if not isinstance(X, np.ndarray):
             X = np.array(X)
@@ -82,6 +94,10 @@ class Distribution:
             return self.__rtruediv__(args[0])
         elif ufunc == np.floor_divide:
             return self.__rtruediv__(args[0])
+        elif ufunc == np.less:
+            return self.__rlt__(args[0])
+        elif ufunc == np.greater:
+            return self.__rgt__(args[0])
         raise ValueError("{} not supported with {} distribution".format(ufunc, self.__name__))
 
     def __call__(self, *size, dtype=np.float):
