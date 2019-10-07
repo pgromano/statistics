@@ -48,3 +48,13 @@ class Interval:
         elif not self.left_inclusive and not self.right_inclusive:
             return val > self.low and val < self.high
 
+    @property
+    def __name__(self):
+        return self.__class__.__name__
+
+    def __str__(self):
+        return f"[{self.low}, {self.high}]"
+
+    def __repr__(self):
+        return self.__str__()
+
