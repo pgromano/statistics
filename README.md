@@ -20,4 +20,4 @@ X + N
        -0.23413696,  1.57921282,  0.76743473, -0.46947439,  0.54256004])
 ```
 
-Here the sampling is performed automatically without a loss of understanding.
+Here the sampling is performed automatically without a loss of understanding.# statistics
