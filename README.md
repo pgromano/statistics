@@ -2,7 +2,7 @@
 
 The goal of this package is to explore how a statistics API may simplify statistical modeling with Python. Several aspects of statistics are manually coded by several users multiple times or treated as black-boxes over several statistics packages. A primary focus in this codebase is how can we develop a simple API that facilitates numerical analysis, without *hiding* the underlying functions and assumptions within.
 
-A key focus of to this end is how statistical distributions can be treated as numerical objects. Take a linear function with a white noise property. `stats.distributions` simplifies the functional form of this by making numerical coding mathematical.
+To this end, statistical distributions can be treated as numerical objects with mathematical operators. Take a linear function with a white noise property. `stats.distributions` simplifies the functional form of this by making numerical coding mathematical.
 
 ```python
 import numpy as np
@@ -20,4 +20,6 @@ X + N
        -0.23413696,  1.57921282,  0.76743473, -0.46947439,  0.54256004])
 ```
 
-Here the sampling is performed automatically without a loss of understanding.# statistics
+Here the sampling is performed automatically without a loss of understanding. There is no longer a need to sample the noise term into a static array. 
+
+Does this add any *new* functionality? Absolutely not! Was it a fun experiment to learn how to overload reflective operators with NumPy arrays? You bet.
